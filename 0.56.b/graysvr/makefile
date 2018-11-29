@@ -2,7 +2,7 @@ VER	= 0.56b
 PLAT	= Linux
 
 # Generic makefile
-MARCH = -march=i686
+MARCH = -m32
 OPTDEFAULT = -fno-omit-frame-pointer -ffast-math -fpermissive $(MARCH)
 OPT 	= -O0 -fno-expensive-optimizations $(OPTDEFAULT)
 #OPT	= -O2 $(OPTDEFAULT)
@@ -24,8 +24,7 @@ DEFNIX  = -D_LINUX
 NIGHTLYDEFS = -D_NIGHTLYBUILD -DTHREAD_TRACK_CALLSTACK
 EXTRADEFS = -D_NEWGUILDSYSTEM -D_MTNETWORK
 #DEBUGDEFS = -D_DEBUG -D_PACKETDUMP -D_TESTEXCEPTION -DDEBUG_CRYPT_MSGS
-SVNDEFS = -D_SUBVERSION
-DEFINES = -DGRAY_SVR -D_CONSOLE -D_REENTRANT $(DEFNIX) $(NIGHTLYDEFS) $(EXTRADEFS) $(DEBUGDEFS) $(SVNDEFS) $(DBDEFS)
+DEFINES = -DGRAY_SVR -D_CONSOLE -D_REENTRANT $(DEFNIX) $(NIGHTLYDEFS) $(EXTRADEFS) $(DEBUGDEFS) $(DBDEFS)
 
 EXE	= graysvr
 REXE	= spheresvr
@@ -41,9 +40,6 @@ SPECIAL = $(EX) $(STRICT) $(DEBUG)
 
 PROF	= -pg
 PIPE	= -pipe
-
-SVNREV     = ../common/subversion/svnwcrev
-SVNREVARG  = ../ ../common/subversion/SvnRevision.tmpl ../common/subversion/SvnRevision.h
 
 SRC	:= 	CAccount.cpp \
 		CBase.cpp \
@@ -183,9 +179,6 @@ tags:	$(SRC)
 
 #cmn:	$(COMMONSRC:.cpp=.o)
 
-svn:
-	@$(SVNREV) $(SVNREVARG)
-
 gray:	$(SRC:.cpp=.o) $(SRC:.c=.co)
 
 #commonlib:	$(COMMONSRC:.cpp=.o)
@@ -194,8 +187,8 @@ gray:	$(SRC:.cpp=.o) $(SRC:.c=.co)
 flags:  
 	@echo "Compiler Flags: $(CC) -c $(O_FLAGS) $(C_FLAGS)"
 
-$(EXE): svn flags gray
-	@$(CC) $(O_FLAGS) $(C_FLAGS) $(LIBS) -o $(EXE) *.o ../common/*.o ../common/twofish/*.o ../common/libev/*.o ../common/zlib/*.o ../sphere/*.o ../network/*.o
+$(EXE): flags gray
+	@$(CC) $(O_FLAGS) $(C_FLAGS) -o $(EXE) *.o ../common/*.o ../common/twofish/*.o ../common/libev/*.o ../common/zlib/*.o ../sphere/*.o ../network/*.o $(LIBS)
 
 version.h:	VERSION
 	echo "#define VERSION 'head -l VERSION'" > version.h
